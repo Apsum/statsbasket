@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.websocket.server.PathParam;
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.DriverManager;
 import java.util.List;
 
 @RestController
@@ -41,12 +43,16 @@ public class LeaguesController {
                 .header("x-rapidapi-key", "3a586b092dmsh57a6c61dcaa955ap19ef2ajsn2655e4fd3202")
                 .build();
         try{
+            Connection connection = DriverManager.getConnection("jdbc:postgresql://localhost:5432/statsbasket","postgres","Goni");
+            connection.prepareStatement("CREATE TABLE League (id int PRIMARY KEY , name varchar(255), logo varchar(255) )").execute();
+
+
 
             Response response = Client.newCall(requete1).execute();
             Leagues league1 = mapper.readValue(response.body().byteStream(), Leagues.class);
             return league1.getLeagues();
         }
-        catch (IOException e){
+        catch (Exception e){
             System.out.println("Erreur réseau");
             e.printStackTrace();
             throw new IOException("Erreur réseau");
